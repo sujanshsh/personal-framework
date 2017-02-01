@@ -263,5 +263,3 @@ class Database
 	}
 
 }
-//table->add_tds(...$tds)
-?>
