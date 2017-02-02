@@ -51,10 +51,7 @@ function custom_error_handler( $errno ,  $errstr ,  $errfile ,  $errline) {
 set_error_handler('custom_error_handler',E_ALL|E_STRICT);
 
 include __DIR__.'/../library/safe_read.php';
-include __DIR__.'/../library/path_info.php';
 
-$pathInfo = new PathInfo();
-$pathInfo->update();
 
 // load some libraries
 
@@ -83,7 +80,7 @@ $global_site_directory = str_replace($_SERVER['DOCUMENT_ROOT'],'',$global_app_di
 $global_base_path = $global_protocol.'://'.SITE_NAME.$global_port_str.$global_site_directory;
 $global_base_app_url = $global_base_path.'/index.php';
 
-
+// no trailing slash in following:
 define('BASE_URL',$global_base_app_url);
 define('BASE_PATH',$global_base_path);
 
@@ -97,28 +94,22 @@ $application_started = true;
 if(file_exists('session_check.php'))
     include 'session_check.php';
 
-if($pathInfo->number_of_paths==0) {
-    // load home controller
-    if(file_exists(__DIR__.'/../controllers/index.php'))
-        include __DIR__.'/../controllers/index.php';
-}
-else if($pathInfo->number_of_paths==1) {
-    $global_ctrl_filename = str_replace('.php','',$pathInfo->path_info_array[1]);
-    $global_ctrl_file = __DIR__.'/../controllers/'.$global_ctrl_filename.'.php';
-    if(file_exists($global_ctrl_file))
-        include $global_ctrl_file;
-    else
-        include __DIR__.'/../responses/404.php';
-}
-else if($pathInfo->number_of_paths>=2) {
-    $global_ctrl_filename = str_replace('.php','',$pathInfo->path_info_array[2]);
-    $global_ctrl_file = __DIR__.'/../controllers/'.$pathInfo->path_info_array[1].'/'.
-                    $global_ctrl_filename.'.php';
-    if(file_exists($global_ctrl_file))
-        include $global_ctrl_file;
-    else
-        include __DIR__.'/../responses/404.php';
+
+$global_path_info = isset($_SERVER['PATH_INFO']) ? rtrim($_SERVER['PATH_INFO'],'/') : '';
+
+if($global_path_info==='') {
+    $controller_file = __DIR__.'/../controllers/index.php';
+} else {
+    $controller_file = __DIR__.'/../controllers'.$global_path_info.'.php';
 }
 
 
+if(!file_exists($controller_file)) {
+    $controller_file = rtrim($controller_file,'.php').'/index.php';
+}
 
+if(!file_exists($controller_file)) {
+    include __DIR__.'/../responses/404.php';
+} else {
+    include $controller_file;
+}
