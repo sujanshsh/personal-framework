@@ -1,6 +1,6 @@
 <?php
 
-$config_Database = [
+$config_database = [
     'host' => 'localhost',
     'user' => 'root',
     'password' => 'password',
