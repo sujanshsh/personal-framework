@@ -2,7 +2,7 @@
 
 // requires on library/safe_read.php <-- function safe_read()
 
-class Database
+class Database implements DatabaseInterface
 {
 	//private $current_table;
 	public $result;
@@ -14,19 +14,19 @@ class Database
 	public $prev_results = [];
 	
 	
-	public function __construct($config_file='Database.php')
+	public function __construct($config_database_file='Database.php')
 	{
-        $config_path_file = '../config/'.$config_file;
-        if(!is_readable($config_path_file)) {
+        $config_database_path_file = '../config/'.$config_database_file;
+        if(!is_readable($config_database_path_file)) {
             die('Database config file not found!');
         }
-        include($config_path_file);
-        $host = $config['host'];
-        $user = $config['user'];
-        $password = $config['password'];
-        $database = $config['database'];
-        $socket = safe_read($config,'socket');
-        $port = safe_read($config,'port');
+        include($config_database_path_file);
+        $host = $config_database['host'];
+        $user = $config_database['user'];
+        $password = $config_database['password'];
+        $database = $config_database['database'];
+        $socket = safe_read($config_database,'socket');
+        $port = safe_read($config_database,'port');
 		$this->database=$database;
         if(Database::$connection[$database]) {
             return;
