@@ -106,51 +106,37 @@ class Database implements DatabaseInterface
 			$this->num_rows=0;
 		return $this->result;
 	}
-	public function insert_into($table,$values,$err="")
+	public function insert_into($table,array $columns,array $values,$err="")
 	{
 		$this->success=false;
-		try
-		{
-			$cols=count($values);
-			if($cols==0)
-				throw 0;
-			else if($cols>30)
-				throw 30;
-			$colsm1=$cols-1;
-			$q="INSERT INTO ".$table." VALUES (";
-			for($i=0;$i<$cols;$i++)
-			{
-				$val=$values[$i];
-				if(gettype($val)=='string')
-					$q.="'$val'";
-				else
-					$q.=$val;
-				if($i!=$colsm1)
-					$q.=",";
-				
-			}
-			$q.=")";
-			
-		}
-		catch(integer $ce)
-		{
-			if($ce==0)
-				echo "Error: database.insert_into(): No columns values supplied!";
-			else
-				echo "Error: database.insert_into(): More than 30 columns values supplied!";
-			return false;
-		}
-		catch(Exception $ex)
-		{
-			echo $ex;
-			return false;
-		}
+        if(count($columns)!==count($values)) {
+            echo 'Database->insert_into(): cols != values';
+            return false;
+        }
+        $cols_count = count($columns);
+        $cols = '';
+        $vals = '';
+        $q="INSERT INTO ".$table;
+        for($i=0;$i<$cols_count;$i++)
+        {
+            $cols.='`'.$columns[$i].'`';
+            if(gettype($values[$i])=='string')
+                $vals.="'".mysqli_escape_string(Database::$connection[$this->database],$val)."'";
+            else
+                $vals.=$values[$i];
+            if($i!=$colsm1) {
+                $cols.=",";
+                $vals.=",";
+            }
+        }
+        $q = "INSERT INTO $table ($cols) VALUES ($vals)";
 		$this->push_result();
 		$this->result=$this->execute_sql_query($q,$err);
 		if($this->result!==false)
 			$this->success=true;
 		return $this->result;
 	}
+    
 	public function replace_into($table,$values,$err="")
 	{
 		$this->success=false;
@@ -262,4 +248,7 @@ class Database implements DatabaseInterface
 		}
 	}
 
+    public function escape_string($str) {
+        return mysqli_escape_string(Database::connection[$this->database],$str);
+    }
 }
