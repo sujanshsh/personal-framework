@@ -8,10 +8,17 @@ function __autoload($name) {
     $testing_classes = [
         'Email'
     ]; 
+    $special_namespaces = [
+        'DatabaseOperations' => '../'
+    ];
     $autoload_path = '../library/classes/';
     $name = str_replace('\\','/',$name);
     $exploded = explode('/',$name);
+    if(isset($special_namespaces[$exploded[0]])) {
+        $autoload_path = $special_namespaces[$exploded[0]];
+    }
     $class_name = $exploded[count($exploded)-1];
+    
     if(in_array($class_name,$testing_classes))
         $autoload_path.='fake/';
     include_once($autoload_path.$name.'.php');
