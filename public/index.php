@@ -5,8 +5,16 @@
  */
 
 function __autoload($name) {
+    $testing_classes = [
+        'Email'
+    ]; 
+    $autoload_path = '../library/classes/';
     $name = str_replace('\\','/',$name);
-    include_once('../library/classes/'.$name.'.php');
+    $exploded = explode('/',$name);
+    $class_name = $exploded[count($exploded)-1];
+    if(in_array($class_name,$testing_classes))
+        $autoload_path.='fake/';
+    include_once($autoload_path.$name.'.php');
 }
 
 function custom_error_handler( $errno ,  $errstr ,  $errfile ,  $errline) {
