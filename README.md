@@ -10,5 +10,8 @@ Designed to solve following problems faced in web development without framework:
 5. Difficult to change configuration
 6. Difficult to update SQL, update code
 
+Future planning:
+1. Integrate with composer
+
 
 
