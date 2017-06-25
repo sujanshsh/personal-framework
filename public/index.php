@@ -102,8 +102,6 @@ define('BASE_PATH',$global_base_path);
 
 $application_started = true;
 
-// for old html or php files directly required:
-
 // following file contains checking of session as per requirement
 // session has to be started by it
 if(file_exists('session_check.php'))
