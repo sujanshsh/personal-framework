@@ -4,7 +4,12 @@
  * Application Startup
  */
 
-function __autoload($name) {
+
+// uncomment the following line for using composer packages 
+// require '../vendor/autoload.php';
+
+ 
+$framework_autoloader = function ($name) {
     $testing_classes = [
         'Email'
     ]; 
@@ -22,6 +27,12 @@ function __autoload($name) {
     if(in_array($class_name,$testing_classes))
         $autoload_path.='fake/';
     include_once($autoload_path.$name.'.php');
+};
+
+try {
+  spl_autoload_register($framework_autoloader,/*throw exception on failure*/TRUE,/*prepend*/FALSE);
+} catch(Exception $ex) {
+  die('Application files could not be loaded');
 }
 
 function custom_error_handler( $errno ,  $errstr ,  $errfile ,  $errline) {
